@@ -126,7 +126,12 @@
 
         function addToMOTD(code) {
             let motdInput = document.getElementById('motdText');
-            motdInput.value = motdInput.value.substr(0, motdInput.selectionStart) + "§" + code + motdInput.value.substr(motdInput.selectionStart);
+            let selectionStart = motdInput.selectionStart;
+            let colorCode = "§" + code;
+            motdInput.value = motdInput.value.substr(0, selectionStart) + colorCode + motdInput.value.substr(selectionStart);
+            motdInput.selectionStart = selectionStart + colorCode.length;
+            motdInput.selectionEnd = selectionStart + colorCode.length;
+            motdInput.focus();
             updateMOTD();
         }
 
