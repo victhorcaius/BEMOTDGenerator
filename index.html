@@ -10,6 +10,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="language" content="English">
 	<meta name="author" content="Victhor Caius">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 	<title>Minecraft: Bedrock Edition MOTD Generator</title>
     <style>
         body {
@@ -38,7 +41,10 @@
             padding: 10px;
             background: black;
             color: white;
-            font-size: 20px;
+            font-size: 30px;
+            font-family: "VT323", serif;
+            font-weight: 400;
+            font-style: normal;
             white-space: pre-line;
         }
         .copy-btn {
@@ -60,6 +66,7 @@
         .style-btn-strikethrough { text-decoration: line-through; }
         .style-btn-underline { text-decoration: underline; }
         .style-btn-italic { font-style: italic; }
+        .style-btn-random { background-color: #ff00ff; color: white; }
         .style-btn-reset { background-color: white; color: black; }
     </style>
 </head>
@@ -90,6 +97,7 @@
             {code: 'm', css: 'text-decoration: line-through;', label: 'Strikethrough', class: 'style-btn-strikethrough'},
             {code: 'n', css: 'text-decoration: underline;', label: 'Underline', class: 'style-btn-underline'},
             {code: 'o', css: 'font-style: italic;', label: 'Italic', class: 'style-btn-italic'},
+            {code: 'k', css: '', label: 'Random', class: 'style-btn-random'},
             {code: 'r', css: '', label: 'Reset', class: 'style-btn-reset'}
         ];
 
@@ -118,7 +126,7 @@
 
         function addToMOTD(code) {
             let motdInput = document.getElementById('motdText');
-            motdInput.value += '§' + code;
+            motdInput.value = motdInput.value.substr(0, motdInput.selectionStart) + "§" + code + motdInput.value.substr(motdInput.selectionStart);
             updateMOTD();
         }
 
@@ -127,12 +135,14 @@
             let formattedText = '';
             let reset = false;
             
-            text.split(/(§[0-9a-fklmor])/g).forEach(part => {
+            text.split(/(§[0-9a-fklmnor])/g).forEach(part => {
                 if (part.startsWith('§')) {
                     let code = part.charAt(1);
                     if (code === 'r') {
                         reset = true;
                         formattedText += '</span>'.repeat((formattedText.match(/<span/g) || []).length);
+                    } else if (code === 'k') {
+                        formattedText += `<span class='random-text'>`;
                     } else {
                         let colorObj = colors.find(c => c.code === code);
                         let styleObj = styles.find(s => s.code === code);
@@ -161,8 +171,27 @@
             });
         }
 
+        function animateRandomText() {
+            const characters = "!@#$%^&*()_+=-`~[]\{}|;':\",./<>?";
+
+            function generateRandomString(len) {
+                let result = "";
+                for (let i = 0; i < len; i++) {
+                    result += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return result;
+            }
+
+            setInterval(() => {
+                document.querySelectorAll('.random-text').forEach(el => {
+                    el.innerText = generateRandomString(el.innerText.length);
+                });
+            }, 5);
+        }
+
         createColorButtons();
         createStyleButtons();
+        animateRandomText();
     </script>
 </body>
 </html>
